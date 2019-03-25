@@ -2,19 +2,30 @@ library(pdftools)
 library(dplyr)
 library(tidytext)
 library(tm)
-library("string")
+library("stringr")
 
-files <- list.files("data",recursive = T)
+classes <- data.frame(class=c(list.files("data",recursive = F)),stringsAsFactors = F)
+docs <- data.frame()
+doc <- data.frame()
+for(myClass in classes$class) {
+        files <- list.files(paste0("data/",myClass),recursive = F)
+        docs <- sapply(paste0("data/",myClass,"/",files),pdf_text)
+        for(i in 1:length(docs)) {
+                docLn <- toString(docs[[i]])
+                doc <- rbind(doc,data.frame(text=docLn,class=myClass))
+                doc$text <- as.character(doc$text)
+                doc$class <- as.character(doc$class)
+        }
+}
 
-classes <- strsplit(files[[1]][1],"/")
-        
 
-doc <- sapply(paste0("data/",files),pdf_text)
+doc <- data.frame(id=1:length(doc$class),text=doc$text,class=doc$class,stringsAsFactors = F)
 myDataset <- data.frame(stringsAsFactors = FALSE)
 
-datasetTemp <- data.frame(id <- 1:length(filename)[1], text=filename, class=str_split(doc),stringsAsFactors = F)
+datasetTemp <- data.frame(doc,stringsAsFactors = F)
+datasetTemp$text <- as.character(datasetTemp$text)
 names(datasetTemp) <- c("id","text","class")
-datasetTemp
+head(datasetTemp)
 ct <- 0         # counter to read files
 for(ind in 1:length(datasetTemp$id)) {
         texto <- datasetTemp$text[ind]
@@ -24,9 +35,9 @@ for(ind in 1:length(datasetTemp$id)) {
         documents = tm_map(documents, tolower)
         documents = tm_map(documents, removePunctuation)
         texto  = tm_map(documents, removeNumbers)$content
-        texto <- tm_map(documents, removeWords,stopwords("pt"))$content
+        texto <- tm_map(documents, removeWords,stopwords("en"))$content
         myDataset <- rbind(myDataset,c(datasetTemp$id[ind],datasetTemp$class[ind], 
-                                       t(texto)),deparse.level = 0, stringsAsFactors =  FALSE)
+                                       t(texto)), stringsAsFactors =  FALSE)
         
 }
 
@@ -72,5 +83,6 @@ head(book_words)
  # Create matrix with TF-IDF
 book_words$tf_idf <- bind_tfidf(book_words$file,book_words$f,book_words$n)
 print(book_words)
+
 
 
