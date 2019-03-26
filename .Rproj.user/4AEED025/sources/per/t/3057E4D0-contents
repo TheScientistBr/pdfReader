@@ -82,7 +82,8 @@ head(book_words)
 
  # Create matrix with TF-IDF
 book_words$tf_idf <- bind_tfidf(book_words$file,book_words$f,book_words$n)
-print(book_words)
+head(book_words)
+tail(book_words)
 
 
 
