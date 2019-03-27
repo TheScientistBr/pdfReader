@@ -85,5 +85,12 @@ book_words$tf_idf <- bind_tfidf(book_words$file,book_words$f,book_words$n)
 head(book_words)
 tail(book_words)
 
+library("wordcloud")
 
+classFlagged <- subset(x = book_words,subset = file=="1")
+classFlagged <- classFlagged[order(classFlagged$tf_idf,decreasing = TRUE),]
+wordcloud(words = classFlagged$word, freq = classFlagged$tf_idf,min.freq=1,
+          max.words=300, random.order=FALSE, rot.per=.15,
+          colors=brewer.pal(8,"Dark2"))
+write.csv(book_words,file = "book_words.csv")
 
