@@ -5,29 +5,29 @@ library(tm)
 library("stringr")
 
 classes <- data.frame(class=c(list.files("data",recursive = F)),stringsAsFactors = F)
-docs <- data.frame()
-doc <- data.frame()
+docs <- data.frame(stringsAsFactors = F)
+doc <- data.frame(stringsAsFactors = F)
 for(myClass in classes$class) {
         files <- list.files(paste0("data/",myClass),recursive = F)
         docs <- sapply(paste0("data/",myClass,"/",files),pdf_text)
         for(i in 1:length(docs)) {
                 docLn <- toString(docs[[i]])
-                doc <- rbind(doc,data.frame(text=docLn,class=myClass))
-                doc$text <- as.character(doc$text)
-                doc$class <- as.character(doc$class)
+                docx <- data.frame(file=files[i],text=docLn,class=myClass)
+                doc <- rbind(doc,docx)
         }
 }
 
 
-doc <- data.frame(id=1:length(doc$class),text=doc$text,class=doc$class,stringsAsFactors = F)
 myDataset <- data.frame(stringsAsFactors = FALSE)
 
 datasetTemp <- data.frame(doc,stringsAsFactors = F)
 datasetTemp$text <- as.character(datasetTemp$text)
-names(datasetTemp) <- c("id","text","class")
+datasetTemp$file <- as.character(datasetTemp$file)
+datasetTemp$class <- as.character(datasetTemp$class)
+
 head(datasetTemp)
 ct <- 0         # counter to read files
-for(ind in 1:length(datasetTemp$id)) {
+for(ind in 1:length(datasetTemp$file)) {
         texto <- datasetTemp$text[ind]
         texto <- paste(texto,collapse = " ")
         texto <- gsub("<.*?>", "", texto)
@@ -41,8 +41,7 @@ for(ind in 1:length(datasetTemp$id)) {
         
 }
 
-myDataset <- data.frame(lapply(myDataset,as.character), stringsAsFactors = FALSE)
-colnames(myDataset) <- c("file","class","text")
+myDataset <- datasetTemp
 book_words <- myDataset %>%
         unnest_tokens(word, text,to_lower = TRUE) %>%
         count(file,word, sort = TRUE) %>% ungroup() %>% as.data.frame()
@@ -87,10 +86,10 @@ tail(book_words)
 
 library("wordcloud")
 
-classFlagged <- subset(x = book_words,subset = file=="1")
+classFlagged <- subset(x = book_words,subset = file=="file_a (1).pdf")
 classFlagged <- classFlagged[order(classFlagged$tf_idf,decreasing = TRUE),]
 wordcloud(words = classFlagged$word, freq = classFlagged$tf_idf,min.freq=1,
-          max.words=300, random.order=FALSE, rot.per=.15,
+          max.words=500, random.order=FALSE, rot.per=.5,
           colors=brewer.pal(8,"Dark2"))
 write.csv(book_words,file = "book_words.csv")
 
