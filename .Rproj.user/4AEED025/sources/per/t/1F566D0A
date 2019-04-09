@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1554485059840.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2080100345",
+    "id" : "1F566D0A",
+    "lastKnownWriteTime" : 1554488279,
+    "last_content_update" : 1554488279841,
+    "path" : "E:/pdfReader/pReader.R",
+    "project_path" : "pReader.R",
+    "properties" : {
+        "cursorPosition" : "109,0",
+        "scrollLine" : "86",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
