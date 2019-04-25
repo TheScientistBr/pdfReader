@@ -74,6 +74,8 @@ total_file <- aggregate(total_file,by = list(total_file$word),conta)
 
 total_file <- total_file[,-2:-3]
 names(total_file) <- c("word","f")
+book_words <- merge(book_words, total_file, by = "word")
+
 book_words <- left_join(book_words, total_file, by = "word")
 names(book_words) <- c("file","word","n","f")
 head(book_words)
